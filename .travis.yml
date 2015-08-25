@@ -3,15 +3,9 @@ language: python
 go:
   - 1.5
 
-services:
-  - rabbitmq
-  - mysql
-
 # http://docs.travis-ci.com/user/ci-environment/#CI-environment-OS
 # gimme has to be kept in sync with Boulder's Go version setting in .travis.yml
 before_install:
-  - travis_retry sudo ./bootstrap/ubuntu.sh
-  - travis_retry sudo apt-get install --no-install-recommends nginx-light openssl
   - '[ "xxx$BOULDER_INTEGRATION" = "xxx" ] || eval "$(gimme 1.5)"'
 
 # using separate envs with different TOXENVs creates 4x1 Travis build
@@ -27,11 +21,31 @@ env:
     - TOXENV=lint
     - TOXENV=cover
 
-# make sure simplehttp simple verification works (custom /etc/hosts)
+sudo: false
+
+services:
+  - rabbitmq
+  - mysql
+
 addons:
+  # make sure simplehttp simple verification works (custom /etc/hosts)
   hosts:
     - le.wtf
   mariadb: "10.0"
+  apt:
+    packages:
+      - ca-certificates
+      - dialog
+      - gcc
+      - libaugeas0
+      - libffi-dev
+      - libssl-dev
+      - lsb-release
+      - nginx-light
+      - openssl
+      - python-dev
+      - python-virtualenv
+      - rsyslog
 
 install: "travis_retry pip install tox coveralls"
 before_script: '[ "xxx$BOULDER_INTEGRATION" = "xxx" ] || ./tests/boulder-start.sh'
