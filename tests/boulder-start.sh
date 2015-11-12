@@ -1,7 +1,9 @@
 #!/bin/bash
 
-source ./tests/boulder-fetch.sh
+export GOPATH="${GOPATH:-/tmp/go}"
+export PATH="$GOPATH/bin:$PATH"
 
-build_boulder
+./tests/boulder-fetch.sh
 
+cd $GOPATH/src/github.com/letsencrypt/boulder
 ./start.py

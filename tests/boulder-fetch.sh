@@ -23,21 +23,17 @@ fi
 
 set -xe
 
-export GOPATH="${GOPATH:-/tmp/go}"
-export PATH="$GOPATH/bin:$PATH"
+# `/...` avoids `no buildable Go source files` errors, for more info
+# see `go help packages`
+go get -d github.com/letsencrypt/boulder/...
+cd $GOPATH/src/github.com/letsencrypt/boulder
+# goose is needed for ./test/create_db.sh
+wget https://github.com/jsha/boulder-tools/raw/master/goose.gz && \
+  mkdir $GOPATH/bin && \
+  zcat goose.gz > $GOPATH/bin/goose && \
+  chmod +x $GOPATH/bin/goose
+./test/create_db.sh
+# listenbuddy is needed for ./start.py
+go get github.com/jsha/listenbuddy
+cd -
 
-function build_boulder {
-  # `/...` avoids `no buildable Go source files` errors, for more info
-  # see `go help packages`
-  go get -d github.com/letsencrypt/boulder/...
-  cd $GOPATH/src/github.com/letsencrypt/boulder
-  # goose is needed for ./test/create_db.sh
-  wget https://github.com/jsha/boulder-tools/raw/master/goose.gz && \
-    mkdir $GOPATH/bin && \
-    zcat goose.gz > $GOPATH/bin/goose && \
-    chmod +x $GOPATH/bin/goose
-  ./test/create_db.sh
-  # listenbuddy is needed for ./start.py
-  go get github.com/jsha/listenbuddy
-  cd -
-}

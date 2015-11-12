@@ -2,8 +2,7 @@
 
 set -o errexit
 
-source ./tests/boulder-fetch.sh
-build_boulder
+./tests/boulder-fetch.sh
 
 source .tox/$TOXENV/bin/activate
 
